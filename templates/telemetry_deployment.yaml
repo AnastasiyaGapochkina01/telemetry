@@ -1,0 +1,54 @@
+{{- range .Values.services  }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Values.namespace }}
+  labels:
+    helm.sh/chart: telemetry-1.0.0
+    app.kubernetes.io/name: telemetry
+    app.kubernetes.io/instance: {{ .name }}
+    app.kubernetes.io/version: {{ $.Values.image.tag }}
+    app.kubernetes.io/managed-by: Helm
+spec:
+  selector:
+    matchLabels:
+       app.kubernetes.io/name: telemetry
+       app.kubernetes.io/instance: {{ .name }}
+  replicas: {{ $.Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: telemetry
+        app.kubernetes.io/instance: {{ .name }}
+    spec:
+      containers:
+        - name: {{ .name }}
+          image: {{ $.Values.image.repository }}:{{ $.Values.image.tag }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: server-port
+              containerPort: {{ $.Values.ports.server }}
+            - name: store-port
+              containerPort: {{ $.Values.ports.store }}
+            - name: metrics
+              containerPort: {{ $.Values.ports.metrics }}
+          resources:
+            {{- toYaml $.Values.resources | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ .name }}-configmap
+          volumeMounts:
+            - name: cgroup
+              mountPath: /sys/fs/cgroup
+            - name: container-logs
+              mountPath: /var/log/container
+      volumes:
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+        - name: container-logs
+          hostPath:
+            path: /var/log/container/{{ .name }} 
+{{- end }}
