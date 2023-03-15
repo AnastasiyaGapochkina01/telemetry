@@ -1,0 +1,96 @@
+services:
+  - name: telemetry-free
+    tm_service: charts
+    host: telemetry-free.nyc.xstaging.tv
+  - name: telemetry-pro
+    tm_service: charts
+    host: telemetry-pro.nyc.xstaging.tv
+  - name: telemetry-widget
+    tm_service: charts
+    host: telemetry-widget.nyc.xstaging.tv
+  - name: telemetry-alerts
+    tm_service: alerts
+    host: telemetry-alerts.nyc.xstaging.tv
+  - name: telemetry-news
+    tm_service: news
+    host: telemetry-news.nyc.xstaging.tv
+  - name: telemetry-pine
+    tm_service: pine
+    host: telemetry-pine.nyc.xstaging.tv
+  - name: telemetry-calendars
+    tm_service: calendars
+    host: telemetry-calendars.nyc.xstaging.tv
+  - name: telemetry-site-pro
+    tm_service: site
+    host: telemetry-site-pro.nyc.xstaging.tv
+  - name: telemetry-site-free
+    tm_service: site
+    host: telemetry-site-free.nyc.xstaging.tv
+  - name: telemetry-site-widget
+    tm_service: site
+    host: telemetry-site-widget.nyc.xstaging.tv
+  - name: telemetry-trading
+    tm_service: trading
+    host: telemetry-trading.nyc.xstaging.tv
+  - name: telemetry-charts-ios-free
+    tm_service: charts
+    host: telemetry-charts-ios-free.nyc.xstaging.tv
+  - name: telemetry-charts-ios-pro
+    tm_service: charts
+    host: telemetry-charts-ios-pro.nyc.xstaging.tv
+  - name: telemetry-charts-android-free
+    tm_service: charts
+    host: telemetry-charts-android-free.nyc.xstaging.tv
+  - name: telemetry-charts-android-pro
+    tm_service: charts
+    host: telemetry-charts-android-pro.nyc.xstaging.tv
+  - name: telemetry-mobile-app-android-free
+    tm_service: mobile-app
+    host: telemetry-mobile-app-android-free.nyc.xstaging.tv
+  - name: telemetry-mobile-app-android-pro
+    tm_service: mobile-app
+    host: telemetry-mobile-app-android-pro.nyc.xstaging.tv
+  - name: telemetry-mobile-app-ios-free
+    tm_service: mobile-app
+    host: telemetry-mobile-app-ios-free.nyc.xstaging.tv
+  - name: telemetry-mobile-app-ios-pro
+    tm_service: mobile-app
+    host: telemetry-mobile-app-ios-pro.nyc.xstaging.tv
+  - name: telemetry-line-tools-storage
+    tm_service: line_tools_storage
+    host: telemetry-line_tools_storage.nyc.xstaging.tv
+
+ingress_class: "nginx"
+namespace: u-agapochkina
+replicaCount: 1
+location: "nyc"
+
+image:
+  repository: registry.xtools.tv/telemetry
+  pullPolicy: IfNotPresent
+  tag: "master-183737"
+
+envs:
+  disablePrometheus: "false"
+  disablePortAllocator: "true"
+  ignoreLogTelemetry: "false"
+  statsdEnabled: "true"
+  statsdHostFromKey: "false"
+  workers: 2
+  statsdPercents: "75,90,95,99"
+  logsThreshold: "100"
+  zkHosts: "zk1:2181,zk2:2181,zk3:2181"
+
+ports:
+  server: 14869
+  store: 13346
+  metrics: 9101
+  statsd: 13655
+
+resources:
+  limits:
+    memory: "600Mi"
+    cpu: 1
+  requests:
+    memory: "600Mi"
+    cpu: 1
