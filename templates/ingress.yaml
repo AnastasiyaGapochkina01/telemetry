@@ -1,0 +1,23 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: telemetry-nginx-ingress
+  namespace: {{ $.Values.namespace }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    kubernetes.io/ingress.class: "{{ $.Values.ingress_class }}"
+spec:
+  rules:
+  {{ range .Values.services  }}
+  - host: {{ .host }}
+    http:
+      paths:
+      - pathType: Prefix
+        path: /{{ .name | trimPrefix "telemetry-" }}(/|$)(.*)
+        backend:
+          service:
+            name: {{ .name  }}-service
+            port:
+              number: {{ $.Values.ports.server }}
+  {{- end }}
